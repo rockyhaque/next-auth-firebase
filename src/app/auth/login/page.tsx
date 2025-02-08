@@ -1,28 +1,43 @@
-// src/app/auth/login.tsx
-"use client";
+"use client"
 
-import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/app/firebase/firebase";
+import { setCredentials } from '@/features/authSlice';
+import { signInWithEmailPassword, signInWithGoogle } from '@/lib/firebase';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Redirect to dashboard or home
+      const user = await signInWithEmailPassword(email, password);
+      const token = await user.getIdToken(); // Firebase JWT Token
+      dispatch(setCredentials({ user, token }));
+      document.cookie = `token=${token}; path=/`; // Set JWT token in cookies
     } catch (error) {
-      setError("Error logging in");
+      console.error(error);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const user = await signInWithGoogle();
+      const token = await user.getIdToken(); // Firebase JWT Token
+      dispatch(setCredentials({ user, token }));
+      document.cookie = `token=${token}; path=/`;
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
-    <div >
-      <h1>Login</h1>
+    <div>
+      <button onClick={handleGoogleLogin}>Login with Google</button>
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -38,7 +53,6 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
-      {error && <p>{error}</p>}
     </div>
   );
 };
