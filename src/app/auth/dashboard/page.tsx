@@ -1,30 +1,20 @@
 "use client";
 
-import { useSelector } from "react-redux";
-
-
-
+import { useAppSelector } from "@/app/redux/hook/hook";
 
 const Dashboard = () => {
-  const user = useSelector((state) => state?.user?.user); 
-
-  console.log(user)
-
-  const isLoading = useSelector((state) => state._persist?.rehydrated) === false;
-  if (isLoading) {
-    return <h2>Loading...</h2>; // Wait until Redux Persist loads
-  }
+  const user = useAppSelector((state) => state?.auth?.user);
+  console.log(user);
   return (
     <div>
-      {user ? (
+      {
         <div>
           <h1>Welcome, {user.displayName || "User"}</h1>
           <p>Email: {user.email}</p>
-          
+          <p> CreatedAt : {user.createdAt}</p>
+          <p> Lastlogged in At : {user.lastLoginAt}</p>
         </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+      }
     </div>
   );
 };

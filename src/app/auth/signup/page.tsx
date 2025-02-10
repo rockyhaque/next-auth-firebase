@@ -10,6 +10,7 @@ import {
 import { auth } from "@/app/firebase/firebase";
 import { useDispatch } from "react-redux";
 import { setLoading, setUser } from "@/app/redux/features/authSlice";
+import { Button } from "@/components/ui/button";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -66,6 +67,7 @@ const SignUp = () => {
         <button type="submit">Sign Up</button>
 
         <button onClick={() => handleGoogleLogin()}>Google Signin/up</button>
+        <Button>dd</Button>
       </form>
       {error && <p>{error}</p>}
     </div>
