@@ -1,35 +1,24 @@
 "use client"
 
-import { setCredentials } from '@/features/authSlice';
-import { signInWithEmailPassword, signInWithGoogle } from '@/lib/firebase';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-
-
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/app/firebase/firebase";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/app/redux/features/authSlice";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const user = await signInWithEmailPassword(email, password);
-      const token = await user.getIdToken(); // Firebase JWT Token
-      dispatch(setCredentials({ user, token }));
-      document.cookie = `token=${token}; path=/`; // Set JWT token in cookies
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      const user = await signInWithGoogle();
-      const token = await user.getIdToken(); // Firebase JWT Token
-      dispatch(setCredentials({ user, token }));
-      document.cookie = `token=${token}; path=/`;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      dispatch(setUser(userCredential.user));
+      // Redirect to dashboard or home
+      console.log(userCredential)
     } catch (error) {
       console.error(error);
     }
