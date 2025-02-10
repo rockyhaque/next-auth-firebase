@@ -1,30 +1,26 @@
-// src/app/auth/dashboard.tsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/app/firebase/firebase";
+import { useSelector } from "react-redux";
+
+
+
 
 const Dashboard = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [user, setUser] = useState<any>(null);
+  const user = useSelector((state) => state?.user?.user); 
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      }
-    });
+  console.log(user)
 
-    return () => unsubscribe();
-  }, []);
-
+  const isLoading = useSelector((state) => state._persist?.rehydrated) === false;
+  if (isLoading) {
+    return <h2>Loading...</h2>; // Wait until Redux Persist loads
+  }
   return (
     <div>
       {user ? (
         <div>
           <h1>Welcome, {user.displayName || "User"}</h1>
-          <p>{user.email}</p>
+          <p>Email: {user.email}</p>
+          
         </div>
       ) : (
         <p>Loading...</p>
